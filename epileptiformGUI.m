@@ -1,16 +1,27 @@
 
 
-function epileptiformGUI(U, V, t, mimg)
-
+function epileptiformGUI(U, V, t, mimg, varargin)
+% function epileptiformGUI(U, V, t, mimg, plotTitle)
+%
+% TODO
+% - show map of signal st dev (select a random 1000 timepoints to
+% compute?)
+% - Show example/avg events that are 'bad' and map of them
+% - color the peak indicator triangles red where the prom/widths are bad
+% - allow re-selection of the 'bad' definition
 hands = struct(); 
 
 hands.f = figure; 
 set(hands.f, 'Position', [1000         420        1412         918]);
 
+
 hands.axIm = subplot(1,2,1); 
 hands.mimg = imagesc(mimg); 
 axis image; axis off; colormap gray;
 hold on;
+if nargin>4
+    title(varargin{1});
+end
 % set(hands.mimg, 'HitTest', 'off'); 
 
 myData.maxW = 0.5; myData.minP = 0.2;
@@ -44,9 +55,10 @@ tr = tr./myData.mimg(py,px); % to df/f
 
 myData.hands.ptTr(ptIdx) = subplot(3,4,3+(ptIdx-1)*4);
 % plot(myData.t, tr); .
-findpeaks(tr, myData.t,'MinPeakProminence',0.02,'Annotate','extents');
+findpeaks(tr, myData.t,'MinPeakProminence',0.005,'Annotate','extents');
 xlim(myData.t(round(numel(tr)/2))+[-10 10])
 xlabel('Time (s)'); ylabel('Signal (df/f)'); 
+title(sprintf('Total st dev = %.3f df/f', std(tr))); 
 legend off
 
 if ptIdx>1; linkaxes(myData.hands.ptTr, 'x'); end
